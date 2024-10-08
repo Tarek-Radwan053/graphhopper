@@ -19,10 +19,13 @@ package com.graphhopper.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.*;
 
-import static com.graphhopper.util.Helper.UTF_CS;
+import static com.graphhopper.util.Helper.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -122,5 +125,114 @@ public class HelperTest {
         assertEquals(145.635986, ele, 1.e-6);
         // ... but converting back to int should yield the same value we started with!
         assertEquals(storedInt, Helper.eleToUInt(ele));
+    }
+    @Test
+    public void testParseList() {
+        // Arrange
+        String input = "[a,b,c]";
+        // Arrange
+        String empty = "[]";
+
+        // Act
+        List<String> result1 = parseList(input);
+
+        // Assert
+        assertEquals(Arrays.asList("a", "b", "c"), result1);
+
+
+        // Act
+        List<String> result2 = parseList(empty);
+
+        // Assert
+        assertEquals(Collections.emptyList(), result2);
+        // Arrange
+        String error = "[,]";
+
+        // Act
+        List<String> result3 = parseList(error);
+
+        // Assert
+        assertEquals(Collections.emptyList(), result3);
+    }
+    @Test
+    public void testSaveProperties_ValidMap() throws IOException {
+        // Arrange
+        Map<String, String> properties = new HashMap<>();
+        properties.put("key1", "value1");
+        properties.put("key2", "value2");
+
+        StringWriter stringWriter = new StringWriter();
+
+        // Act
+        saveProperties(properties, stringWriter);
+
+        // Assert
+        String expectedOutput = "key1=value1\nkey2=value2\n";
+        assertEquals(expectedOutput, stringWriter.toString());
+    }
+    @Test
+    public void testSaveProperties_EmptyMap() throws IOException {
+        // Arrange
+        Map<String, String> properties = new HashMap<>();
+        StringWriter stringWriter = new StringWriter();
+
+        // Act
+        saveProperties(properties, stringWriter);
+
+        // Assert
+        assertEquals("", stringWriter.toString());
+    }
+
+    @Test
+    public void testSaveProperties_SingleEntry() throws IOException {
+        // Arrange
+        Map<String, String> properties = new HashMap<>();
+        properties.put("singleKey", "singleValue");
+        StringWriter stringWriter = new StringWriter();
+
+        // Act
+        saveProperties(properties, stringWriter);
+
+        // Assert
+        assertEquals("singleKey=singleValue\n", stringWriter.toString());
+    }
+    @Test
+    public void testIsToString_ValidInput() throws IOException {
+        // Arrange
+        String input = "Hello, World!";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes("UTF-8"));
+
+        // Act
+        String result = isToString(inputStream);
+
+        // Assert
+        assertEquals(input, result);
+    }
+
+    @Test
+    public void testIsToString_EmptyInput() throws IOException {
+        // Arrange
+        String input = "";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes("UTF-8"));
+
+        // Act
+        String result = isToString(inputStream);
+
+        // Assert
+        assertEquals(input, result);
+    }
+
+    @Test
+    public void testIsToString_NullInputStream() {
+        // Arrange
+        InputStream inputStream = null;
+
+        // Act & Assert
+        IOException exception = assertThrows(IOException.class, () -> {
+            isToString(inputStream);  // Expect IOException because method throws it when closing the stream
+        });
+
+        // Verify the exception message
+        assertEquals("Stream closed", exception.getMessage());
     }
 }

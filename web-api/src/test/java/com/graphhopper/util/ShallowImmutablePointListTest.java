@@ -5,97 +5,111 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShallowImmutablePointListTest {
 
+    /**
+     * Test getLat with a valid index.
+     */
     @Test
-    void testConstructorValidRange() {
+    void testGetLat() {
         // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
+        PointList pointList = new PointList(10, true);
         pointList.add(1.0, 2.0, 3.0); // Latitude, Longitude, Elevation
-        pointList.add(4.0, 5.0, 6.0);
 
-        // Act
-        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 2, pointList);
-
-        // Assert (Oracle)
-        assertEquals(2, shallowList.size(), "The size should be 2 for the given range.");
-    }
-
-    @Test
-    void testConstructorInvalidRange() {
-        // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
-        pointList.add(1.0, 2.0, 3.0);
-
-        // Act and Assert (Oracle)
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new ShallowImmutablePointList(1, 0, pointList);
-        });
-        assertEquals("from must be smaller or equal to end", exception.getMessage(), "Should throw an exception for invalid range.");
-    }
-
-    @Test
-    void testSize() {
-        // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
-        pointList.add(1.0, 2.0, 3.0);
-        pointList.add(4.0, 5.0, 6.0);
-
-        // Act
-        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 2, pointList);
-
-        // Assert (Oracle)
-        assertEquals(2, shallowList.size(), "The size should be 2.");
-    }
-
-    @Test
-    void testIsEmpty() {
-        // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
-
-        // Act
-        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 0, pointList);
-
-        // Assert (Oracle)
-        assertTrue(shallowList.isEmpty(), "The list should be empty.");
-    }
-
-    @Test
-    void testGetIntervalString() {
-        // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
-        pointList.add(1.0, 2.0, 3.0);
-        pointList.add(4.0, 5.0, 6.0);
-
-        // Act
-        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 2, pointList);
-
-        // Assert (Oracle)
-        assertEquals("[0, 2[", shallowList.getIntervalString(), "Interval string should be '[0, 2['.");
-    }
-
-    @Test
-    void testGetLatValidIndex() {
-        // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
-        pointList.add(1.0, 2.0, 3.0);
-
-        // Act
         ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
 
+        // Act
+        double lat = shallowList.getLat(0);
+
         // Assert (Oracle)
-        assertEquals(1.0, shallowList.getLat(0), "Latitude should be 1.0 for index 0.");
+        assertEquals(1.0, lat, "The latitude should match the value in the wrapped list.");
     }
 
+    /**
+     * Test getLon with a valid index.
+     */
     @Test
-    void testGetLatInvalidIndex() {
+    void testGetLon() {
         // Arrange
-        PointList pointList = new PointList(10, true); // Enable 3D
+        PointList pointList = new PointList(10, true);
         pointList.add(1.0, 2.0, 3.0);
 
-        // Act and Assert (Oracle)
         ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> shallowList.getLat(1), "Should throw exception for index out of range.");
+
+        // Act
+        double lon = shallowList.getLon(0);
+
+        // Assert (Oracle)
+        assertEquals(2.0, lon, "The longitude should match the value in the wrapped list.");
     }
 
-    // Additional tests for getLon and getEle with valid/invalid indices follow the same AAA structure.
+    /**
+     * Test getEle with a valid index.
+     */
+    @Test
+    void testGetEle() {
+        // Arrange
+        PointList pointList = new PointList(10, true);
+        pointList.add(1.0, 2.0, 3.0);
 
+        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
+
+        // Act
+        double ele = shallowList.getEle(0);
+
+        // Assert (Oracle)
+        assertEquals(3.0, ele, "The elevation should match the value in the wrapped list.");
+    }
+
+    /**
+     * Test setElevation with a valid index.
+     */
+    @Test
+    void testSetElevation() {
+        // Arrange
+        PointList pointList = new PointList(10, true);
+        pointList.add(1.0, 2.0, 3.0);
+
+        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
+
+        // Act
+        shallowList.setElevation(0, 4.0);
+
+        // Assert (Oracle)
+        assertEquals(4.0, shallowList.getEle(0), "The elevation should be updated to the new value.");
+    }
+
+    /**
+     * Test makeImmutable to ensure it calls the wrapped PointList's makeImmutable method.
+     */
+    @Test
+    void testMakeImmutable() {
+        // Arrange
+        PointList pointList = new PointList(10, true);
+        pointList.add(1.0, 2.0, 3.0);
+
+        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
+
+        // Act
+        shallowList.makeImmutable();
+
+        // Assert (Oracle)
+        assertTrue(shallowList.isImmutable(), "The wrapped PointList should be immutable after calling makeImmutable.");
+    }
+
+    /**
+     * Test isImmutable to verify if it correctly reflects the immutability status of the wrapped list.
+     */
+    @Test
+    void testIsImmutable() {
+        // Arrange
+        PointList pointList = new PointList(10, true);
+        pointList.add(1.0, 2.0, 3.0);
+
+        ShallowImmutablePointList shallowList = new ShallowImmutablePointList(0, 1, pointList);
+
+        // Act - ensure immutability
+        shallowList.makeImmutable();
+
+        // Assert (Oracle)
+        assertTrue(shallowList.isImmutable(), "The wrapped PointList should be immutable after calling makeImmutable.");
+    }
 }

@@ -155,84 +155,49 @@ public class HelperTest {
         assertEquals(Collections.emptyList(), result3);
     }
     @Test
-    public void testSaveProperties_ValidMap() throws IOException {
+    public void testSaveProperties() throws IOException {
         // Arrange
         Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties2 = new HashMap<>();
+        Map<String, String> properties3 = new HashMap<>();
         properties.put("key1", "value1");
         properties.put("key2", "value2");
+        properties3.put("singleKey", "singleValue");
 
         StringWriter stringWriter = new StringWriter();
+        StringWriter stringWriter2 = new StringWriter();
+        StringWriter stringWriter3 = new StringWriter();
 
         // Act
         saveProperties(properties, stringWriter);
+        saveProperties(properties2, stringWriter2);
+        saveProperties(properties3, stringWriter3);
 
         // Assert
         String expectedOutput = "key1=value1\nkey2=value2\n";
         assertEquals(expectedOutput, stringWriter.toString());
-    }
-    @Test
-    public void testSaveProperties_EmptyMap() throws IOException {
-        // Arrange
-        Map<String, String> properties = new HashMap<>();
-        StringWriter stringWriter = new StringWriter();
-
-        // Act
-        saveProperties(properties, stringWriter);
-
-        // Assert
-        assertEquals("", stringWriter.toString());
-    }
-
-    @Test
-    public void testSaveProperties_SingleEntry() throws IOException {
-        // Arrange
-        Map<String, String> properties = new HashMap<>();
-        properties.put("singleKey", "singleValue");
-        StringWriter stringWriter = new StringWriter();
-
-        // Act
-        saveProperties(properties, stringWriter);
-
-        // Assert
-        assertEquals("singleKey=singleValue\n", stringWriter.toString());
+        assertEquals("", stringWriter2.toString());
+        assertEquals("singleKey=singleValue\n", stringWriter3.toString());
     }
     @Test
     public void testIsToString_ValidInput() throws IOException {
         // Arrange
         String input = "Hello, World!";
+        String input2 = "";
         InputStream inputStream = new ByteArrayInputStream(input.getBytes("UTF-8"));
-
-        // Act
-        String result = isToString(inputStream);
-
-        // Assert
-        assertEquals(input, result);
-    }
-
-    @Test
-    public void testIsToString_EmptyInput() throws IOException {
-        // Arrange
-        String input = "";
-        InputStream inputStream = new ByteArrayInputStream(input.getBytes("UTF-8"));
-
-        // Act
-        String result = isToString(inputStream);
-
-        // Assert
-        assertEquals(input, result);
-    }
-
-    @Test
-    public void testIsToString_NullInputStream() {
-        // Arrange
-        InputStream inputStream = null;
-
-        // Act & Assert
+        InputStream inputStream2 = new ByteArrayInputStream(input2.getBytes("UTF-8"));
+        InputStream inputStream3 = null;
         IOException exception = assertThrows(IOException.class, () -> {
-            isToString(inputStream);  // Expect IOException because method throws it when closing the stream
+            isToString(inputStream3);  // Expect IOException because method throws it when closing the stream
         });
 
-        // Verify the exception message
+        // Act
+        String result = isToString(inputStream);
+        String result2 = isToString(inputStream2);
+
+        // Assert
+        assertEquals(input, result);
+        assertEquals(input2, result2);
         assertEquals("Stream closed", exception.getMessage());
     }
 }

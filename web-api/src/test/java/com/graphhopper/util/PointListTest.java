@@ -14,9 +14,6 @@ public class PointListTest {
         pointList = new PointList();
         emptyPointList = PointList.EMPTY;
     }
-
-
-
     @Test
     public void testAddPoint3D() {
         pointList = new PointList(10, true);
@@ -25,24 +22,6 @@ public class PointListTest {
         assertEquals(10.0, pointList.getLat(0));
         assertEquals(20.0, pointList.getLon(0));
         assertEquals(30.0, pointList.getEle(0));
-    }
-
-
-
-
-
-
-
-
-
-
-
-    @Test
-    public void testClone() {
-        pointList.add(10.0, 20.0);
-        PointList cloned = pointList.clone(false);
-        assertEquals(pointList.size(), cloned.size());
-        assertTrue(pointList.equals(cloned));
     }
 
     @Test
@@ -56,20 +35,17 @@ public class PointListTest {
         assertEquals(25.0, parsedList.getLon(1));
         assertEquals(15.0, parsedList.getLat(1));
     }
-
-
-
-
-
     @Test
-    public void testCloneWithReverse() {
+    public void testClone() {
         pointList.add(10.0, 20.0);
         pointList.add(30.0, 40.0);
+        PointList cloned = pointList.clone(false);
+        assertEquals(pointList.size(), cloned.size());
+        assertTrue(pointList.equals(cloned));
         PointList clonedReversed = pointList.clone(true);
         assertEquals(30.0, clonedReversed.getLat(0));
         assertEquals(40.0, clonedReversed.getLon(0));
         assertEquals(10.0, clonedReversed.getLat(1));
         assertEquals(20.0, clonedReversed.getLon(1));
     }
-
 }

@@ -37,6 +37,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml', '**/package.json') }}
           restore-keys: |
             ${{ runner.os}}-node_modules-
+            
 
       # Log the JVM flags to ensure documentation in logs
       - name: Log JVM Flags Used
@@ -51,19 +52,7 @@ jobs:
       - name: Measure Code Coverage
         run: |
           echo "Measuring code coverage with flags."
-          # Assuming you're using a plugin like JaCoCo for code coverage.
+         
           mvn jacoco:report
           
-      # Documentation update (placeholder for real documentation check)
-      - name: Update Documentation with Flag Justification
-        run: |
-          echo "Documenting each JVM flag used and its impact."
-          echo "UseG1GC: Optimizes garbage collection."
-          echo "PrintGCDetails: Logs GC details for observability."
-          echo "Xms512m, Xmx1024m: Sets memory limits for stability."
-          echo "OptimizeStringConcat: Improves string concatenation performance."
-          echo "ShowCodeDetailsInExceptionMessages: Enhances debugging."
-
-      # Add humor element in documentation (placeholder example)
-      - name: Add Humor Element
-        run: echo "Why did the JVM refuse to run? Because it didn’t have enough heap space! 😂"
+      

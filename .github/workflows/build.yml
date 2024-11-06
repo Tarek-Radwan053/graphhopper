@@ -21,15 +21,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-      - name: Cache node
-        uses: actions/cache@v3
-        with:
-          path: web-bundle/node
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os}}-node-
-
+            
+      # Cache node_modules
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
@@ -37,22 +30,38 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml', '**/package.json') }}
           restore-keys: |
             ${{ runner.os}}-node_modules-
-            
 
       # Log the JVM flags to ensure documentation in logs
       - name: Log JVM Flags Used
-        run: echo "Running tests with JVM flags -XX +UseG1GC -XX:+PrintGCDetails -Xms512m -Xmx1024m -XX:+OptimizeStringConcat -XX:+ShowCodeDetailsInExceptionMessages"
+        run: echo "Running tests with multiple JVM flags sets."
 
-      # Build and Test with specified JVM flags
-      - name: Build and Test ${{ matrix.java-version }} with JVM Flags
+      # Measure Code Coverage with different flags (five variations)
+      - name: Measure Code Coverage with Set 1
         run: |
-          mvn -B clean test -DargLine="-XX:+UseG1GC -XX:+PrintGCDetails -Xms512m -Xmx1024m -XX:+OptimizeStringConcat -XX:+ShowCodeDetailsInExceptionMessages"
-
-      # Measure Code Coverage
-      - name: Measure Code Coverage
-        run: |
-          echo "Measuring code coverage with flags."
-         
+          echo "Running with flags: -XX:+UseG1GC -XX:+PrintGCDetails"
+          mvn -B clean test -DargLine="-XX:+UseG1GC -XX:+PrintGCDetails"
           mvn jacoco:report
-          
-      
+
+      - name: Measure Code Coverage with Set 2
+        run: |
+          echo "Running with flags: -Xms512m -Xmx1024m"
+          mvn -B clean test -DargLine="-Xms512m -Xmx1024m"
+          mvn jacoco:report
+
+      - name: Measure Code Coverage with Set 3
+        run: |
+          echo "Running with flags: -XX:+OptimizeStringConcat"
+          mvn -B clean test -DargLine="-XX:+OptimizeStringConcat"
+          mvn jacoco:report
+
+      - name: Measure Code Coverage with Set 4
+        run: |
+          echo "Running with flags: -XX:+ShowCodeDetailsInExceptionMessages"
+          mvn -B clean test -DargLine="-XX:+ShowCodeDetailsInExceptionMessages"
+          mvn jacoco:report
+
+      - name: Measure Code Coverage with Set 5
+        run: |
+          echo "Running with flags: -XX:+UseG1GC -Xmx2048m"
+          mvn -B clean test -DargLine="-XX:+UseG1GC -Xmx2048m"
+          mvn jacoco:report
